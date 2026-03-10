@@ -19,6 +19,7 @@ module.exports = {
         
         // Serve support form - handle both full path and stripped path from reverse proxy
         const isSupportPage = (req.url === '/support' || req.url === '/support/' || 
+                              req.url === '/node-red/support' || req.url === '/node-red/support/' ||
                               req.url === '/cysoar/support' || req.url === '/cysoar/support/');
         if (isSupportPage && req.method === 'GET') {
             const supportFormPath = path.join(__dirname, 'branding', 'support-form.html');
@@ -36,6 +37,7 @@ module.exports = {
         
         // Handle support form submission - handle both full path and stripped path
         const isSubmitEndpoint = (req.url === '/support/submit' || req.url === '/support/submit/' ||
+                                 req.url === '/node-red/support/submit' || req.url === '/node-red/support/submit/' ||
                                  req.url === '/cysoar/support/submit' || req.url === '/cysoar/support/submit/');
         if (isSubmitEndpoint && req.method === 'POST') {
             let body = '';
@@ -153,7 +155,7 @@ Submitted at: ${new Date().toISOString()}
         menu: { // Custom menu items
             "menu-item-cysoar-help": {
                 label: "CySOAR Help",
-                url: "support",
+                url: "/node-red/support",
                 target: "_blank"
             },
             "menu-item-keyboard-shortcuts": {

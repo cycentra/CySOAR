@@ -403,8 +403,8 @@
             }
 
             try {
-                // Submit to backend API
-                const response = await fetch('support/submit', {
+                // Submit to backend API - use absolute path for proxy
+                const response = await fetch('/node-red/support/submit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
