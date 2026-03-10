@@ -140,15 +140,18 @@ RUN mkdir -p /usr/src/node-red/node_modules/cysoar-support-system && \
     cp /usr/src/node-red/node_modules/@node-red/editor-client/cysoar-support-package.json /usr/src/node-red/node_modules/cysoar-support-system/package.json && \
     chown -R node-red:root /usr/src/node-red/node_modules/cysoar-support-system
 
-# Fix missing tslib dependency - copy tslib.es6.js to public directory
-# Some palette nodes expect this file to be available at root level
-RUN if [ -f /usr/src/node-red/node_modules/tslib/tslib.es6.js ]; then \
-        cp /usr/src/node-red/node_modules/tslib/tslib.es6.js /usr/src/node-red/node_modules/@node-red/editor-client/public/; \
-        echo "✅ tslib.es6.js copied to public directory"; \
+# Fix missing tslib dependency - copy UMD version for browser compatibility
+# Some palette nodes expect tslib to be available at root level
+# Use tslib.js (UMD) instead of tslib.es6.js (ES6 modules) for browser compatibility
+RUN if [ -f /usr/src/node-red/node_modules/tslib/tslib.js ]; then \
+        cp /usr/src/node-red/node_modules/tslib/tslib.js /usr/src/node-red/node_modules/@node-red/editor-client/public/tslib.js; \
+        cp /usr/src/node-red/node_modules/tslib/tslib.js /usr/src/node-red/node_modules/@node-red/editor-client/public/tslib.es6.js; \
+        echo "✅ tslib.js (UMD version) copied to public directory"; \
     else \
-        echo "⚠️  tslib.es6.js not found - installing tslib"; \
+        echo "⚠️  tslib not found - installing"; \
         npm install tslib@^2.6.0 && \
-        cp /usr/src/node-red/node_modules/tslib/tslib.es6.js /usr/src/node-red/node_modules/@node-red/editor-client/public/; \
+        cp /usr/src/node-red/node_modules/tslib/tslib.js /usr/src/node-red/node_modules/@node-red/editor-client/public/tslib.js && \
+        cp /usr/src/node-red/node_modules/tslib/tslib.js /usr/src/node-red/node_modules/@node-red/editor-client/public/tslib.es6.js; \
     fi
 
 RUN npm config set cache /data/.npm --global 
