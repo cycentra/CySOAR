@@ -3,7 +3,6 @@
  * Handles support request submissions, log collection, and email notifications
  */
 
-const nodemailer = require('nodemailer');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
@@ -12,6 +11,17 @@ const util = require('util');
 const execPromise = util.promisify(exec);
 
 module.exports = function(RED) {
+    
+    /**
+     * Check if SMTP is configured
+     */
+    function isSMTPConfigured() {
+        return !!(
+            process.env.SMTP_HOST &&
+            process.env.SMTP_USER &&
+            process.env.SMTP_PASS
+        );
+    }
     
     /**
      * Collect system information
@@ -244,18 +254,48 @@ ${collectedData.errorLogs.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\
     }
 
     /**
-     * Send email via nodemailer
+     * Send email via nodemailer (lazy-loaded)
      */
     async function sendSupportEmail(formData, collectedData) {
+        // Check if SMTP is configured
+        if (!isSMTPConfigured()) {
+            RED.log.warn('⚠️ SMTP not configured - support request logged locally only');
+            
+            // Log to Node-RED console instead
+            RED.log.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            RED.log.info('📧 Support Request Received (Email Not Sent)');
+            RED.log.info(`From: ${formData.name} <${formData.email}>`);
+            RED.log.info(`Subject: ${formData.subject}`);
+            RED.log.info(`Category: ${formData.category} | Priority: ${formData.priority}`);
+            RED.log.info(`Description: ${formData.description}`);
+            RED.log.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            
+            // Return success - form works, just no email
+            return {
+                success: true,
+                mode: 'local-only',
+                message: 'Support request logged. Configure SMTP environment variables to enable email notifications.'
+            };
+        }
+
+        // Lazy-load nodemailer only when SMTP is configured
+        let nodemailer;
+        try {
+            nodemailer = require('nodemailer');
+        } catch (error) {
+            RED.log.error('❌ nodemailer module not found');
+            throw new Error('Email functionality not available');
+        }
+
         // Configure email transport
         // NOTE: Update these settings with your SMTP server details
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || 'smtp.gmail.com',
-            port: process.env.SMTP_PORT || 587,
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT) || 587,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: process.env.SMTP_USER || 'noreply@cycentra.com',
-                pass: process.env.SMTP_PASS || 'your-password-here'
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
             }
         });
 
@@ -267,8 +307,8 @@ ${collectedData.errorLogs.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\
         };
 
         const mailOptions = {
-            from: `"CySOAR Support System" <${process.env.SMTP_USER || 'noreply@cycentra.com'}>`,
-            to: 'support@cycentra.com',
+            from: `"CySOAR Support System" <${process.env.SMTP_USER}>`,
+            to: process.env.SUPPORT_EMAIL || 'support@cycentra.com',
             replyTo: formData.email,
             subject: `${priorityPrefix[formData.priority.toLowerCase()]} ${formData.subject}`,
             html: formatSupportEmail(formData, collectedData),
@@ -292,7 +332,12 @@ ${JSON.stringify(collectedData.systemInfo, null, 2)}
         try {
             const info = await transporter.sendMail(mailOptions);
             RED.log.info(`Support email sent: ${info.messageId}`);
-            return { success: true, messageId: info.messageId };
+            return { 
+                success: true, 
+                mode: 'email-sent',
+                message: 'Support request submitted and email sent successfully',
+                messageId: info.messageId 
+            };
         } catch (error) {
             RED.log.error(`Failed to send support email: ${error.message}`);
             throw error;
@@ -336,13 +381,15 @@ ${JSON.stringify(collectedData.systemInfo, null, 2)}
                 collectedData.packageInfo = await collectPackageInfo();
             }
 
-            // Send email
-            await sendSupportEmail(formData, collectedData);
+            // Attempt to send email (or log locally if SMTP not configured)
+            const result = await sendSupportEmail(formData, collectedData);
 
             res.json({
                 success: true,
-                message: 'Support request submitted successfully',
-                ticketId: `CYSOAR-${Date.now()}`
+                message: result.message,
+                mode: result.mode,
+                ticketId: `CYSOAR-${Date.now()}`,
+                smtpConfigured: isSMTPConfigured()
             });
 
         } catch (error) {
@@ -365,5 +412,10 @@ ${JSON.stringify(collectedData.systemInfo, null, 2)}
         }
     });
 
-    RED.log.info('CySOAR Support System initialized');
+    // Log initialization status
+    if (isSMTPConfigured()) {
+        RED.log.info('✅ CySOAR Support System initialized with email notifications');
+    } else {
+        RED.log.info('✅ CySOAR Support System initialized (local logging only - set SMTP_* env vars for email)');
+    }
 };

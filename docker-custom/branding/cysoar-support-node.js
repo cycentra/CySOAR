@@ -4,17 +4,16 @@
  */
 
 module.exports = function(RED) {
-    // Initialize support system immediately when node is loaded
+    // Initialize support system - but don't block node loading on failure
     try {
         const supportHandler = require('./support-handler.js');
         supportHandler(RED);
-        RED.log.info('✅ CySOAR Support System initialized successfully');
+        // Success logged from support-handler.js
     } catch (error) {
-        RED.log.error('❌ Failed to initialize CySOAR Support System');
-        RED.log.error('Error: ' + error.message);
-        if (error.stack) {
-            RED.log.error(error.stack);
-        }
+        // Log warning but don't throw - allows Node-RED to continue loading
+        RED.log.warn('⚠️ CySOAR Support System initialization skipped');
+        RED.log.warn(`Reason: ${error.message}`);
+        // Container continues to work normally
     }
     
     // Define a config node (hidden from palette)
