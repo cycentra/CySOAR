@@ -22,7 +22,8 @@ module.exports = {
                               req.url === '/node-red/support' || req.url === '/node-red/support/' ||
                               req.url === '/cysoar/support' || req.url === '/cysoar/support/');
         if (isSupportPage && req.method === 'GET') {
-            const supportFormPath = path.join(__dirname, 'branding', 'support-form.html');
+            // Support form is installed at /usr/src/node-red/node_modules/cysoar-support-system/
+            const supportFormPath = '/usr/src/node-red/node_modules/cysoar-support-system/support-form.html';
             
             fs.readFile(supportFormPath, 'utf8', (err, data) => {
                 if (err) {
