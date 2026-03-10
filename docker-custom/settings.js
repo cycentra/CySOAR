@@ -17,8 +17,10 @@ module.exports = {
         const nodemailer = require('nodemailer');
         const os = require('os');
         
-        // Serve support form at /cysoar/support
-        if ((req.url === '/cysoar/support' || req.url === '/cysoar/support/') && req.method === 'GET') {
+        // Serve support form - handle both full path and stripped path from reverse proxy
+        const isSupportPage = (req.url === '/support' || req.url === '/support/' || 
+                              req.url === '/cysoar/support' || req.url === '/cysoar/support/');
+        if (isSupportPage && req.method === 'GET') {
             const supportFormPath = path.join(__dirname, 'branding', 'support-form.html');
             
             fs.readFile(supportFormPath, 'utf8', (err, data) => {
@@ -32,8 +34,10 @@ module.exports = {
             return;
         }
         
-        // Handle support form submission
-        if ((req.url === '/cysoar/support/submit' || req.url === '/cysoar/support/submit/') && req.method === 'POST') {
+        // Handle support form submission - handle both full path and stripped path
+        const isSubmitEndpoint = (req.url === '/support/submit' || req.url === '/support/submit/' ||
+                                 req.url === '/cysoar/support/submit' || req.url === '/cysoar/support/submit/');
+        if (isSubmitEndpoint && req.method === 'POST') {
             let body = '';
             
             req.on('data', chunk => {
@@ -149,7 +153,7 @@ Submitted at: ${new Date().toISOString()}
         menu: { // Custom menu items
             "menu-item-cysoar-help": {
                 label: "CySOAR Help",
-                url: "/cysoar/support",
+                url: "support",
                 target: "_blank"
             },
             "menu-item-keyboard-shortcuts": {
