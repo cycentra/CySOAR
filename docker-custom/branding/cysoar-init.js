@@ -57,7 +57,7 @@ console.log('🚀 CySOAR customization script loaded!');
                     }
                     
                     // Safety: don't go too far up
-                    if (currentElement.classList.contains('red-ui-sidebar-content')) {
+                    if (currentElement && currentElement.classList && currentElement.classList.contains('red-ui-sidebar-content')) {
                         break;
                     }
                 }

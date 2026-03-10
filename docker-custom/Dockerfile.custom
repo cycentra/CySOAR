@@ -140,6 +140,17 @@ RUN mkdir -p /usr/src/node-red/node_modules/cysoar-support-system && \
     cp /usr/src/node-red/node_modules/@node-red/editor-client/cysoar-support-package.json /usr/src/node-red/node_modules/cysoar-support-system/package.json && \
     chown -R node-red:root /usr/src/node-red/node_modules/cysoar-support-system
 
+# Fix missing tslib dependency - copy tslib.es6.js to public directory
+# Some palette nodes expect this file to be available at root level
+RUN if [ -f /usr/src/node-red/node_modules/tslib/tslib.es6.js ]; then \
+        cp /usr/src/node-red/node_modules/tslib/tslib.es6.js /usr/src/node-red/node_modules/@node-red/editor-client/public/; \
+        echo "✅ tslib.es6.js copied to public directory"; \
+    else \
+        echo "⚠️  tslib.es6.js not found - installing tslib"; \
+        npm install tslib@^2.6.0 && \
+        cp /usr/src/node-red/node_modules/tslib/tslib.es6.js /usr/src/node-red/node_modules/@node-red/editor-client/public/; \
+    fi
+
 RUN npm config set cache /data/.npm --global 
 
 USER node-red
