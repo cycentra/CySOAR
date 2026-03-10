@@ -109,56 +109,36 @@ console.log('🚀 CySOAR customization script loaded!');
         });
     }
     
-    // Redirect Help menu to Support Form
-    function setupSupportFormRedirect() {
-        // Find the Help menu item in the main dropdown menu
-        var helpMenuItem = document.querySelector('#red-ui-header-button-sidemenu');
-        
-        if (helpMenuItem) {
-            // Add click handler to intercept Help click
-            document.addEventListener('click', function(event) {
-                var target = event.target;
-                
-                // Check if clicked element or its parents is the Help menu item
-                while (target && target !== document.body) {
-                    // Look for the help menu item by text content
-                    if (target.textContent && 
-                        (target.textContent.trim().includes('CySOAR Help') || 
-                         target.textContent.trim().includes('Help') ||
-                         target.classList.contains('red-ui-menu-label'))) {
-                        
-                        // Check if this is specifically the help menu
-                        var menuLabel = target.querySelector('.red-ui-menu-label');
-                        if (menuLabel && menuLabel.textContent.includes('Help')) {
-                            // Prevent default help sidebar from opening
-                            event.preventDefault();
-                            event.stopPropagation();
-                            
-                            // Open support form in new tab
-                            window.open('/cysoar/support', '_blank');
-                            console.log('✓ Redirected to Support Form');
-                            return false;
-                        }
+    // Fix menu items - replace Node-RED Website with CySOAR Help
+    function fixMenuItems() {
+        // Find and update "Node-RED Website" menu item to "CySOAR Help"
+        document.querySelectorAll('.red-ui-menu-item').forEach(function(item) {
+            var label = item.querySelector('.red-ui-menu-label');
+            if (label) {
+                // Replace "Node-RED website" with "CySOAR Help"
+                if (label.textContent.includes('Node-RED website')) {
+                    label.textContent = 'CySOAR Help';
+                    // Update the link to point to support form
+                    var link = item.querySelector('a');
+                    if (link) {
+                        link.href = '/cysoar/support';
+                        link.target = '_blank';
+                        link.removeAttribute('data-help-page'); // Remove node-red help attribute
                     }
-                    target = target.parentElement;
+                    console.log('✓ Updated Node-RED website link to CySOAR Help');
                 }
-            }, true); // Use capture phase to intercept early
-        }
+            }
+        });
         
-        // Also find and modify any direct help links
-        setTimeout(function() {
-            document.querySelectorAll('a[href*="help"], .red-ui-menu-item').forEach(function(link) {
-                if (link.textContent && link.textContent.includes('Help')) {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        window.open('/cysoar/support', '_blank');
-                        console.log('✓ Redirected help link to Support Form');
-                        return false;
-                    });
-                }
-            });
-        }, 1000);
+        // Also handle via direct attribute search
+        document.querySelectorAll('a[href*="nodered.org"]').forEach(function(link) {
+            link.href = '/cysoar/support';
+            link.target = '_blank';
+            var label = link.querySelector('.red-ui-menu-label');
+            if (label) {
+                label.textContent = 'CySOAR Help';
+            }
+        });
     }
     
     // Master function to run all replacements
@@ -167,7 +147,7 @@ console.log('🚀 CySOAR customization script loaded!');
         replaceMenuHeaders();
         removeHelpSection();
         replaceAboutText();
-        setupSupportFormRedirect(); // Add support form redirect
+        fixMenuItems(); // Fix menu items including CySOAR Help link
         
         // Remove preload hiding styles after cleanup
         var hideStyle = document.getElementById('cysoar-preload-hide');

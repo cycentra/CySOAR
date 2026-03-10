@@ -12,7 +12,7 @@ echo "========================================"
 echo ""
 
 IMAGE_NAME="ghcr.io/cycentra/cysoar"
-VERSION="1.0.1"
+VERSION="1.0.2"
 BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
 echo "📦 Image: $IMAGE_NAME:$VERSION"

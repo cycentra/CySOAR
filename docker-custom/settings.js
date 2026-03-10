@@ -19,8 +19,18 @@ module.exports = {
         },
         header: {
             title: "CySOAR"
+        },
+        menu: { // Custom menu items
+            "menu-item-cysoar-help": {
+                label: "CySOAR Help",
+                url: "/cysoar/support",
+                target: "_blank"
+            },
+            "menu-item-keyboard-shortcuts": {
+                label: "Keyboard Shortcuts",
+                onselect: "RED.actions.invoke('core:show-help-tab-keyboard-shortcuts')"
+            }
         }
-        // Note: menu customization moved to cysoar-init.js for dynamic support form link
     },
     
     // Function to initialize support system
