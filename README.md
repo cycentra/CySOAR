@@ -1,40 +1,42 @@
-# Node-RED Docker
+# CySOAR - Security Orchestration, Automation & Response
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/node-red/node-red-docker.svg)](https://greenkeeper.io/)
-[![Build Status](https://travis-ci.org/node-red/node-red-docker.svg?branch=master)](https://travis-ci.org/node-red/node-red-docker)
-[![DockerHub Pull](https://img.shields.io/docker/pulls/nodered/node-red.svg)](https://hub.docker.com/r/nodered/node-red/)
-[![DockerHub Stars](https://img.shields.io/docker/stars/nodered/node-red.svg?maxAge=2592000)](https://hub.docker.com/r/nodered/node-red/)
+**Based on Node-RED Docker**
 
-This project describes some of the many ways Node-RED can be run under Docker and has support for multiple architectures (amd64, arm32v6, arm32v7, arm64v8, i386 and s390x).
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+CySOAR is a whitelabeled Security Orchestration, Automation and Response (SOAR) platform built on Node-RED. This project describes how CySOAR runs under Docker and has support for multiple architectures (amd64, arm32v6, arm32v7, arm64v8, i386 and s390x).
+
 Some basic familiarity with Docker and the [Docker Command Line](https://docs.docker.com/engine/reference/commandline/cli/) is assumed.
 
-**Note**: In version 1.2 we removed the named VOLUME from the build. It should not affect many users - but the details are [here](volumechanges.md).
+**Built on:** Node-RED 4.1.7  
+**Container Registry:** `ghcr.io/cycentra/cysoar`
 
-As of Node-RED 1.0 this project provides the build for the `nodered/node-red` container on [Docker Hub](https://hub.docker.com/r/nodered/node-red/).
+---
 
-As of Node-RED 4.0.9 the containers are also available from the [GitHub Container Regisry](https://github.com/node-red/node-red-docker/pkgs/container/node-red) as `ghcr.io/node-red/node-red` with the same tag names as on Docker Hub.
-
-Previous 0.20.x versions are still available at https://hub.docker.com/r/nodered/node-red-docker.
+> **Note:** This is a customized build of Node-RED for security automation use cases. The base Node-RED functionality remains, with added branding and security-focused pre-installed nodes.
 
 ## Quick Start
-To run in Docker in its simplest form just run:
+To run CySOAR in Docker in its simplest form:
 
-        docker run -it -p 1880:1880 -v node_red_data:/data --name mynodered nodered/node-red
+```bash
+docker run -it -p 1880:1880 -v cysoar_data:/data --name cysoar cysoar:latest
+```
 
 Let's dissect that command:
 
-        docker run              - run this container, initially building locally if necessary
-        -it                     - attach a terminal session so we can see what is going on
-        -p 1880:1880            - connect local port 1880 to the exposed internal port 1880
-        -v node_red_data:/data  - mount the host node_red_data directory to the container /data directory so any changes made to flows are persisted
-        --name mynodered        - give this machine a friendly local name
-        nodered/node-red        - the image to base it on - currently Node-RED v4.1.7
+- `docker run` - run this container, initially building locally if necessary
+- `-it` - attach a terminal session so we can see what is going on
+- `-p 1880:1880` - connect local port 1880 to the exposed internal port 1880
+- `-v cysoar_data:/data` - mount the host cysoar_data directory to the container /data directory so any changes made to flows are persisted
+- `--name cysoar` - give this machine a friendly local name
+- `cysoar:latest` - the image to use
 
 
 
-Running that command should give a terminal window with a running instance of Node-RED.
+Running that command should give a terminal window with a running instance of CySOAR.
 
-        Welcome to Node-RED
+```
+Welcome to CySOAR (Node-RED)
         ===================
 
         10 Oct 12:57:10 - [info] Node-RED version: v4.1.7

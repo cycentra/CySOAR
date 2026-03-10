@@ -3,7 +3,7 @@ ARG NODE_VERSION=20
 ARG OS=bookworm-slim
 
 #### Stage BASE ########################################################################################################
-FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
+FROM node:${NODE_VERSION}-${OS} AS base
 
 # Copy scripts
 COPY scripts/*.sh /tmp/
@@ -44,6 +44,15 @@ COPY package.json .
 COPY flows.json /data
 COPY scripts/entrypoint.sh .
 
+# Copy CySOAR settings
+COPY settings.js /data/settings.js
+RUN chown 1000:1000 /data/settings.js
+
+# Copy custom CSS for branding
+RUN mkdir -p /data/custom
+COPY branding/custom.css /data/custom/custom.css
+RUN chown -R 1000:1000 /data/custom
+
 #### Stage BUILD #######################################################################################################
 FROM base AS build
 
@@ -65,18 +74,23 @@ ARG TAG_SUFFIX=default
 LABEL org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.docker.dockerfile=".docker/Dockerfile.debian" \
     org.label-schema.license="Apache-2.0" \
-    org.label-schema.name="Node-RED" \
+    org.label-schema.name="CySOAR" \
     org.label-schema.version=${BUILD_VERSION} \
-    org.label-schema.description="Low-code programming for event-driven applications." \
-    org.label-schema.url="https://nodered.org" \
+    org.label-schema.description="Security Orchestration, Automation and Response Platform." \
+    org.label-schema.url="https://cycentra.com" \
     org.label-schema.vcs-ref=${BUILD_REF} \
     org.label-schema.vcs-type="Git" \
-    org.label-schema.vcs-url="https://github.com/node-red/node-red-docker" \
-    org.opencontainers.image.source="https://github.com/node-red/node-red-docker" \
+    org.label-schema.vcs-url="https://github.com/cycentra/CySOAR" \
+    org.opencontainers.image.source="https://github.com/cycentra/CySOAR" \
     org.label-schema.arch=${ARCH} \
-    authors="Dave Conway-Jones, Nick O'Leary, James Thomas, Raymond Mouthaan"
+    authors="Cycentra Team"
 
 COPY --from=build /usr/src/node-red/prod_node_modules ./node_modules
+
+# Copy CySOAR branding assets and replace Node-RED defaults
+COPY branding/logo.svg /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red.svg
+COPY branding/favicon.ico /usr/src/node-red/node_modules/@node-red/editor-client/public/favicon.ico
+COPY branding/logo.png /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red-256.png
 
 # Chown, install devtools & Clean up
 RUN chown -R node-red:root /usr/src/node-red && \

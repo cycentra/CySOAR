@@ -1,35 +1,28 @@
 {
-    "name": "node-red-docker",
-    "version": "4.1.7",
-    "description": "Low-code programming for event-driven applications",
-    "homepage": "http://nodered.org",
+    "name": "CySOAR",
+    "version": "1.0.0",
+    "description": "CySOAR - Security Orchestration, Automation and Response",
+    "homepage": "https://cycentra.com",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-docker.git"
+        "url": "https://github.com/cycentra/CySOAR.git"
     },
     "main": "node_modules/node-red/red/red.js",
     "scripts": {
-        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
-        "debug": "node --inspect=0.0.0.0:9229 $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
-        "debug_brk": "node --inspect=0.0.0.0:9229 --inspect-brk $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+        "start": "node $NODE_OPTIONS node_modules/node-red/red/red.js $FLOWS",
+        "debug": "node --inspect=0.0.0.0:9229 $NODE_OPTIONS node_modules/node-red/red/red.js $FLOWS",
+        "debug_brk": "node --inspect=0.0.0.0:9229 --inspect-brk $NODE_OPTIONS node_modules/node-red/red/red.js $FLOWS"
     },
     "contributors": [
         {
-            "name": "Dave Conway-Jones"
-        },
-        {
-            "name": "Nick O'Leary"
-        },
-        {
-            "name": "James Thomas"
-        },
-        {
-            "name": "Raymond Mouthaan"
+            "name": "Cycentra Team"
         }
+        
     ],
     "dependencies": {
-        "node-red": "4.1.7"
+        "node-red": "4.1.7",
+        "nodemailer": "^6.9.0"
     },
     "engines": {
         "node": ">=18"

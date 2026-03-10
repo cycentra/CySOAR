@@ -3,7 +3,7 @@ ARG NODE_VERSION=20
 ARG OS=alpine
 
 #### Stage BASE ########################################################################################################
-FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
+FROM node:${NODE_VERSION}-${OS} AS base
 
 # Copy scripts
 COPY scripts/*.sh /tmp/
@@ -42,6 +42,10 @@ COPY package.json .
 COPY flows.json /data
 COPY scripts/entrypoint.sh .
 
+# Copy CySOAR settings
+COPY settings.js /data/settings.js
+RUN chown 1000:1000 /data/settings.js
+
 #### Stage BUILD #######################################################################################################
 FROM base AS build
 
@@ -63,33 +67,92 @@ ARG TAG_SUFFIX=default
 LABEL org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.docker.dockerfile=".docker/Dockerfile.alpine" \
     org.label-schema.license="Apache-2.0" \
-    org.label-schema.name="Node-RED" \
+    org.label-schema.name="CySOAR" \
     org.label-schema.version=${BUILD_VERSION} \
-    org.label-schema.description="Low-code programming for event-driven applications." \
-    org.label-schema.url="https://nodered.org" \
+    org.label-schema.description="Security Orchestration, Automation and Response Platform" \
+    org.label-schema.url="https://cycentra.com" \
     org.label-schema.vcs-ref=${BUILD_REF} \
     org.label-schema.vcs-type="Git" \
-    org.label-schema.vcs-url="https://github.com/node-red/node-red-docker" \
-    org.opencontainers.image.source="https://github.com/node-red/node-red-docker" \
+    org.label-schema.vcs-url="https://github.com/cycentra/CySOAR" \
+    org.opencontainers.image.source="https://github.com/cycentra/CySOAR" \
     org.label-schema.arch=${ARCH} \
-    authors="Dave Conway-Jones, Nick O'Leary, James Thomas, Raymond Mouthaan"
+    authors="Cycentra Team"
 
 COPY --from=build /usr/src/node-red/prod_node_modules ./node_modules
 
-# Chown, install devtools & Clean up
+# Chown and install devtools first
 RUN chown -R node-red:root /usr/src/node-red && \
     /tmp/install_devtools.sh && \
     rm -r /tmp/*
+
+# Copy CySOAR branding assets AFTER devtools to ensure they're not overwritten
+COPY branding/logo.svg /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red.svg
+COPY branding/icon-simple.svg /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red-icon.svg
+COPY branding/icon-simple.svg /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red-icon-black.svg
+COPY branding/icon-simple.svg /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red-256.svg
+COPY branding/favicon.ico /usr/src/node-red/node_modules/@node-red/editor-client/public/favicon.ico
+COPY branding/logo.png /usr/src/node-red/node_modules/@node-red/editor-client/public/red/images/node-red-256.png
+
+# Copy custom CSS and JS to Node-RED public directory
+COPY branding/custom.css /usr/src/node-red/node_modules/@node-red/editor-client/public/red/custom.css
+COPY branding/cysoar-preload.js /usr/src/node-red/node_modules/@node-red/editor-client/public/red/cysoar-preload.js
+COPY branding/cysoar-init.js /usr/src/node-red/node_modules/@node-red/editor-client/public/red/cysoar-init.js
+
+# Copy support system files
+COPY branding/support-form.html /usr/src/node-red/node_modules/@node-red/editor-client/support-form.html
+COPY branding/support-handler.js /usr/src/node-red/node_modules/@node-red/editor-client/support-handler.js
+COPY branding/cysoar-support-node.js /usr/src/node-red/node_modules/@node-red/editor-client/cysoar-support-node.js
+COPY branding/cysoar-support-package.json /usr/src/node-red/node_modules/@node-red/editor-client/cysoar-support-package.json
+
+# Replace the about file (changelog) with CySOAR version
+COPY branding/about /usr/src/node-red/node_modules/@node-red/editor-client/public/red/about
+
+# Remove tour files completely to prevent "Take a tour" and guided tours
+RUN rm -rf /usr/src/node-red/node_modules/@node-red/editor-client/public/red/tours/*
+
+# Replace version 4.1.7 with 1.0.0 in package.json files
+RUN sed -i 's/"version": "4.1.7"/"version": "1.0.0"/g' /usr/src/node-red/node_modules/node-red/package.json && \
+    sed -i 's/"version": "4.1.7"/"version": "1.0.0"/g' /usr/src/node-red/node_modules/@node-red/editor-client/package.json && \
+    sed -i 's/"version": "4.1.7"/"version": "1.0.0"/g' /usr/src/node-red/node_modules/@node-red/runtime/package.json 2>/dev/null || true
+
+# Inject custom CSS and JS into the HTML template  
+# First fix any missing quotes in the template (fix corruption from build)
+RUN sed -i 's|style.min.css?v={{ cacheBuster }}>|style.min.css?v={{ cacheBuster }}">|g' /usr/src/node-red/node_modules/@node-red/editor-client/templates/index.mst
+# Inject preload script in HEAD (runs before body renders)
+RUN sed -i '/<\/head>/i\    <script src="red/cysoar-preload.js?v={{ cacheBuster }}"></script>' /usr/src/node-red/node_modules/@node-red/editor-client/templates/index.mst
+# Then append our custom CSS and main JS
+RUN sed -i '/<link rel="stylesheet" href="red\/style.min.css/a\    <link rel="stylesheet" href="red/custom.css?v={{ cacheBuster }}">' /usr/src/node-red/node_modules/@node-red/editor-client/templates/index.mst && \
+    sed -i '/<script src="{{{ asset.main }}}/a\    <script src="red/cysoar-init.js?v={{ cacheBuster }}"></script>' /usr/src/node-red/node_modules/@node-red/editor-client/templates/index.mst
+
+# Modify locale files to replace Node-RED branding with CySOAR and hide tours
+RUN sed -i 's/Node-RED/CySOAR/g' /usr/src/node-red/node_modules/@node-red/editor-client/locales/en-US/editor.json && \
+    sed -i 's/node-red/cycentra soar/g' /usr/src/node-red/node_modules/@node-red/editor-client/locales/en-US/editor.json && \
+    sed -i 's/Show guided tours for new versions//g' /usr/src/node-red/node_modules/@node-red/editor-client/locales/en-US/editor.json && \
+    sed -i 's/Show quick tips//g' /usr/src/node-red/node_modules/@node-red/editor-client/locales/en-US/editor.json && \
+    sed -i 's/"welcomeTours": ".*"/"welcomeTours": ""/g' /usr/src/node-red/node_modules/@node-red/editor-client/locales/en-US/editor.json
+
+# Setup CySOAR Support System integration
+# Install as a proper Node-RED node in the application node_modules
+RUN mkdir -p /usr/src/node-red/node_modules/cysoar-support-system && \
+    cp /usr/src/node-red/node_modules/@node-red/editor-client/cysoar-support-node.js /usr/src/node-red/node_modules/cysoar-support-system/ && \
+    cp /usr/src/node-red/node_modules/@node-red/editor-client/support-handler.js /usr/src/node-red/node_modules/cysoar-support-system/ && \
+    cp /usr/src/node-red/node_modules/@node-red/editor-client/support-form.html /usr/src/node-red/node_modules/cysoar-support-system/ && \
+    cp /usr/src/node-red/node_modules/@node-red/editor-client/cysoar-support-package.json /usr/src/node-red/node_modules/cysoar-support-system/package.json && \
+    chown -R node-red:root /usr/src/node-red/node_modules/cysoar-support-system
 
 RUN npm config set cache /data/.npm --global 
 
 USER node-red
 
-# Env variables
+# Environment variables for support system (can be overridden at runtime)
 ENV NODE_RED_VERSION=$NODE_RED_VERSION \
     NODE_PATH=/usr/src/node-red/node_modules:/data/node_modules \
     PATH=/usr/src/node-red/node_modules/.bin:${PATH} \
-    FLOWS=flows.json
+    FLOWS=flows.json \
+    SMTP_HOST=smtp.gmail.com \
+    SMTP_PORT=587 \
+    SMTP_USER=noreply@cycentra.com \
+    SMTP_PASS=""
 
 # ENV NODE_RED_ENABLE_SAFE_MODE=true    # Uncomment to enable safe start mode (flows not running)
 # ENV NODE_RED_ENABLE_PROJECTS=true     # Uncomment to enable projects option

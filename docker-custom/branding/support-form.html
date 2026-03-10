@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CySOAR Support - Technical Assistance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #dc3545;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            margin-top: 10px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: 400;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .info-box strong {
+            color: #28a745;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #28a745;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .footer {
+            padding: 20px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛟 CySOAR Technical Support</h1>
+            <p>Submit a support request and our team will assist you shortly</p>
+        </div>
+
+        <div class="form-container">
+            <div class="alert alert-success" id="successAlert">
+                ✅ <strong>Success!</strong> Your support request has been submitted. We'll contact you shortly.
+            </div>
+
+            <div class="alert alert-error" id="errorAlert">
+                ❌ <strong>Error!</strong> <span id="errorMessage"></span>
+            </div>
+
+            <div class="info-box">
+                <strong>📋 Before submitting:</strong> Please provide as much detail as possible. System logs and environment information will be automatically included to help us diagnose your issue faster.
+            </div>
+
+            <form id="supportForm">
+                <!-- Contact Information -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Name <span class="required">*</span></label>
+                        <input type="text" name="name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <input type="email" name="email" required placeholder="john@example.com">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company/Organization</label>
+                        <input type="text" name="company" placeholder="Cycentra360">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567">
+                    </div>
+                </div>
+
+                <!-- Issue Details -->
+                <div class="form-group">
+                    <label>Issue Category <span class="required">*</span></label>
+                    <select name="category" required>
+                        <option value="">Select a category...</option>
+                        <option value="technical">Technical Issue / Bug</option>
+                        <option value="integration">Integration / API Problem</option>
+                        <option value="performance">Performance / Slow Response</option>
+                        <option value="security">Security Concern</option>
+                        <option value="workflow">Workflow / Automation Issue</option>
+                        <option value="configuration">Configuration Help</option>
+                        <option value="feature">Feature Request</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Priority <span class="required">*</span></label>
+                    <select name="priority" required>
+                        <option value="">Select priority...</option>
+                        <option value="low">Low - General question</option>
+                        <option value="medium">Medium - Issue affects some workflows</option>
+                        <option value="high">High - Issue affects critical operations</option>
+                        <option value="critical">Critical - System down / data loss</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject <span class="required">*</span></label>
+                    <input type="text" name="subject" required placeholder="Brief description of the issue">
+                </div>
+
+                <div class="form-group">
+                    <label>Detailed Description <span class="required">*</span></label>
+                    <textarea name="description" required placeholder="Please describe your issue in detail:&#10;- What were you trying to do?&#10;- What happened instead?&#10;- When did this start?&#10;- Steps to reproduce (if applicable)"></textarea>
+                </div>
+
+                <!-- Log Collection -->
+                <div class="form-group">
+                    <label>System Information to Include</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="includeLogs" value="system" checked>
+                            System Information (Node.js version, memory, CPU)
+                        </label>
+                        <label>
+                            <input type="checkbox" name="includeLogs" value="flows" checked>
+                            Flow Configuration (current flows and nodes)
+                        </label>
+                        <label>
+                            <input type="checkbox" name="includeLogs" value="recent" checked>
+                            Recent Logs (last 100 lines)
+                        </label>
+                        <label>
+                            <input type="checkbox" name="includeLogs" value="errors" checked>
+                            Error Logs (warnings and errors)
+                        </label>
+                        <label>
+                            <input type="checkbox" name="includeLogs" value="packages" checked>
+                            Installed Packages and Versions
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="btn-container">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                        ← Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Submit Support Request →
+                    </button>
+                </div>
+            </form>
+
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Submitting your request and collecting logs...</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔒 Your information is secure and will only be used to assist with your support request.</p>
+            <p style="margin-top: 5px;">Support Email: <strong>support@cycentra.com</strong></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('supportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Hide alerts
+            document.getElementById('successAlert').classList.remove('active');
+            document.getElementById('errorAlert').classList.remove('active');
+
+            // Show loading
+            document.getElementById('loadingIndicator').classList.add('active');
+            document.getElementById('supportForm').style.display = 'none';
+            document.getElementById('submitBtn').disabled = true;
+
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
+            
+            // Convert FormData to object
+            for (let [key, value] of formData.entries()) {
+                if (key === 'includeLogs') {
+                    if (!data.includeLogs) data.includeLogs = [];
+                    data.includeLogs.push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            try {
+                // Submit to backend API
+                const response = await fetch('/cysoar/support/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    document.getElementById('successAlert').classList.add('active');
+                    this.reset();
+                    
+                    // Redirect back after 3 seconds
+                    setTimeout(() => {
+                        window.history.back();
+                    }, 3000);
+                } else {
+                    // Error
+                    throw new Error(result.error || 'Failed to submit support request');
+                }
+            } catch (error) {
+                console.error('Error submitting support request:', error);
+                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('errorAlert').classList.add('active');
+                document.getElementById('supportForm').style.display = 'block';
+            } finally {
+                document.getElementById('loadingIndicator').classList.remove('active');
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

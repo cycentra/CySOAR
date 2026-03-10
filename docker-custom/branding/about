@@ -1,0 +1,27 @@
+#### CySOAR 1.0.0: Security Orchestration & Automation Response
+
+**CySOAR** (Cycentra Security Orchestration, Automation and Response) is a powerful low-code platform designed for security automation and orchestration workflows.
+
+##### Key Features
+
+- **Visual Workflow Builder**: Drag-and-drop interface for creating complex security automation workflows
+- **Extensive Integration Library**: Connect with hundreds of security tools and services
+- **Real-time Monitoring**: Track and monitor your security operations in real-time
+- **Flexible Deployment**: Deploy on-premises or in the cloud
+- **Scalable Architecture**: Handle enterprise-scale security operations
+
+##### Getting Started
+
+1. **Create a Flow**: Click the + button to add a new flow tab
+2. **Add Nodes**: Drag nodes from the palette on the left into your workspace
+3. **Connect Nodes**: Wire nodes together to create your automation logic
+4. **Configure**: Double-click nodes to configure their properties
+5. **Deploy**: Click the Deploy button to activate your workflows
+
+##### Support
+
+For documentation, tutorials, and support, please contact your Cycentra administrator or visit the internal knowledge base.
+
+---
+
+**CySOAR** - Powered by Cycentra360

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="cyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1F3A"/>
+      <stop offset="50%" stop-color="#1E40FF"/>
+      <stop offset="100%" stop-color="#4FB6FF"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="120" cy="120" r="115" fill="url(#cyGradient)"/>
+  
+  <!-- CY Monogram in white -->
+  <g transform="translate(50, 80)" fill="white">
+    <!-- C -->
+    <path d="M60 0 H30 C15 0 0 15 0 30 V60 C0 75 15 90 30 90 H60 V75 H35 C25 75 20 70 20 60 V30 C20 20 25 15 35 15 H60 Z"/>
+    <!-- Y -->
+    <path d="M70 0 H85 V35 L105 60 V90 H90 V62 L70 37 Z"/>
+  </g>
+</svg>

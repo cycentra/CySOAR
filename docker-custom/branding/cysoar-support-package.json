@@ -1,0 +1,10 @@
+{
+  "name": "cysoar-support-system",
+  "version": "1.0.0",
+  "description": "CySOAR Support System",
+  "node-red": {
+    "nodes": {
+      "cysoar-support": "cysoar-support-node.js"
+    }
+  }
+}

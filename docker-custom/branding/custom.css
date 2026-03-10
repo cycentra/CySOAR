@@ -1,0 +1,163 @@
+/* ====================================================================
+   CySOAR Custom Styling - Force Override All Red Buttons
+   ==================================================================== */
+
+/* CRITICAL: Force Deploy button to be GREEN */
+#red-ui-header-button-deploy,
+button#red-ui-header-button-deploy,
+a#red-ui-header-button-deploy {
+    background-color: #28a745 !important;
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+}
+
+#red-ui-header-button-deploy:hover,
+button#red-ui-header-button-deploy:hover {
+    background-color: #218838 !important;
+    background: #218838 !important;
+    border-color: #1e7e34 !important;
+}
+
+#red-ui-header-button-deploy:active,
+#red-ui-header-button-deploy:focus,
+button#red-ui-header-button-deploy:active,
+button#red-ui-header-button-deploy:focus {
+    background-color: #1e7e34 !important;
+    background: #1e7e34 !important;
+    border-color: #1c7430 !important;
+}
+
+/* Force ALL primary buttons to GREEN */
+.red-ui-button.primary,
+button.primary,
+.primary.red-ui-button,
+a.red-ui-button.primary,
+button[class*="primary"] {
+    background-color: #28a745 !important;
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+}
+
+.red-ui-button.primary:hover,
+button.primary:hover {
+    background-color: #218838 !important;
+    background: #218838 !important;
+    border-color: #1e7e34 !important;
+}
+
+/* Override any RED color variables */
+:root {
+    --red-ui-primary-color: #28a745 !important;
+    --red-ui-primary-color-hover: #218838 !important;
+    --red-ui-primary-color-active: #1e7e34 !important;
+}
+
+/* Force links to be green */
+a[href]:not([href="#"]) {
+    color: #28a745 !important;
+}
+
+a[href]:hover {
+    color: #218838 !important;
+}
+
+/* ====================================================================
+   Hide Tours and Change Log sections immediately  
+   ==================================================================== */
+
+/* Hide expanded tree items that likely contain changelog/tours */
+.red-ui-editableList-item-content.expanded {
+    /* JavaScript will handle removal - this is just a fallback */
+}
+
+/* Hide menu items containing tours */
+.red-ui-menu-item:has(a[href*="tours"]),
+li:has(a[href*="tours"]),
+a[href*="tours"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Hide maintenance release headings */
+h4[id*="-maintenance-release"],
+h4[id*="release"],
+h3[id*="changelog"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Change sidebar tab active indicators from RED to GREEN */
+.red-ui-sidebar-header .red-ui-tab.active {
+    border-bottom-color: #28a745 !important;
+}
+
+.red-ui-tabs li.red-ui-tab.active a {
+    border-bottom-color: #28a745 !important;
+}
+
+/* Hide Node-RED logo/branding in About section */
+#red-ui-settings-tab-view-about .red-ui-about-logo,
+#red-ui-settings-tab-view .red-ui-about-logo {
+    display: none !important;
+}
+
+/* Replace Node-RED version with CySOAR version in About */
+#red-ui-settings-tab-view-about p:first-of-type,
+#red-ui-settings-tab-view p:first-of-type {
+    font-size: 0 !important;
+}
+
+#red-ui-settings-tab-view-about p:first-of-type::before,
+#red-ui-settings-tab-view p:first-of-type::before {
+    content: "Cycentra SOAR v1.0.0";
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Hide Node-RED text in header */
+#red-ui-header .red-ui-header-logo span {
+    /* Keep CySOAR text visible - already set in settings.js */
+}
+
+/* Change info panel links from RED to GREEN */
+.red-ui-sidebar-info a,
+.red-ui-help a {
+    color: #28a745 !important;
+}
+
+.red-ui-sidebar-info a:hover,
+.red-ui-help a:hover {
+    color: #1e7e34 !important;
+}
+
+/* Change validation errors from RED to AMBER (optional) */
+.red-ui-typedInput-invalid {
+    border-color: #ffc107 !important;
+}
+
+/* Change deploy spinner/status indicators from RED to GREEN */
+.red-ui-header-button-spinner.red-ui-deploy-spinner {
+    border-top-color: #28a745 !important;
+}
+
+/* Override any lingering red colors in buttons */
+.ui-button.ui-state-default {
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+}
+
+/* Palette Manager - hide version numbers */
+#red-ui-settings-tab-palette .red-ui-editableList-container .red-ui-palette-module-version {
+    display: none !important;
+}
+
+#red-ui-settings-tab-palette .red-ui-editableList-container .red-ui-palette-module-name ~ span {
+    display: none !important;
+}

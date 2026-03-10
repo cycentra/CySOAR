@@ -1,12 +1,12 @@
 {
-    "name": "node-red-docker",
-    "version": "4.1.7",
-    "description": "Low-code programming for event-driven applications",
-    "homepage": "http://nodered.org",
+    "name": "cysoar",
+    "version": "1.0.0",
+    "description": "CySOAR - Security Orchestration, Automation and Response Platform",
+    "homepage": "https://cycentra.com",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-docker.git"
+        "url": "https://github.com/cycentra/CySOAR.git"
     },
     "private": true,
     "scripts": {
@@ -16,16 +16,10 @@
     },
     "contributors": [
         {
-            "name": "Dave Conway-Jones"
+            "name": "Cycentra Team"
         },
         {
-            "name": "Nick O'Leary"
-        },
-        {
-            "name": "James Thomas"
-        },
-        {
-            "name": "Raymond Mouthaan"
+            "name": "Original Node-RED Docker by Dave Conway-Jones, Nick O'Leary, James Thomas, Raymond Mouthaan"
         }
     ],
     "dependencies": {
