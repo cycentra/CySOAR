@@ -7,12 +7,12 @@ set -e
 cd "$(dirname "$0")"
 
 echo "========================================"
-echo "Building CySOAR Custom Image v1.0.8"
+echo "Building CySOAR Custom Image v1.0.9"
 echo "========================================"
 echo ""
 
 IMAGE_NAME="ghcr.io/cycentra/cysoar"
-VERSION="1.0.8"
+VERSION="1.0.9"
 BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
 echo "📦 Image: $IMAGE_NAME:$VERSION"

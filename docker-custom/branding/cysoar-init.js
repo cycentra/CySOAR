@@ -121,7 +121,7 @@ console.log('🚀 CySOAR customization script loaded!');
                     // Update the link to point to support form
                     var link = item.querySelector('a');
                     if (link) {
-                        link.href = '/node-red/support';
+                        link.href = '/cysoar/support';
                         link.target = '_blank';
                         link.removeAttribute('data-help-page'); // Remove node-red help attribute
                     }
@@ -132,7 +132,7 @@ console.log('🚀 CySOAR customization script loaded!');
         
         // Also handle via direct attribute search
         document.querySelectorAll('a[href*="nodered.org"]').forEach(function(link) {
-            link.href = '/node-red/support';
+            link.href = '/cysoar/support';
             link.target = '_blank';
             var label = link.querySelector('.red-ui-menu-label');
             if (label) {
